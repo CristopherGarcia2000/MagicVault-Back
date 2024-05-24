@@ -27,35 +27,36 @@ public class Users implements UserDetails {
     private String pass;
     private String email;
 
+    // Implementing UserDetails interface methods
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return null; // Returns the authorities granted to the user. Currently not implemented.
     }
 
     @Override
     public String getPassword() {
-        return pass;
+        return pass; // Returns the password of the user.
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return true; // Returns whether the user's account is not expired.
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Returns whether the user is not locked.
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Returns whether the user's credentials (password) are not expired.
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; // Returns whether the user is enabled.
     }
-
 
 }

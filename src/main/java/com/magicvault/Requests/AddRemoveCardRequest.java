@@ -1,10 +1,12 @@
+// Class representing a request to add or remove a card from a deck.
 package com.magicvault.requests;
 
 public class AddRemoveCardRequest {
-    private String deckname;
-    private String cardName;
-    private String user;
+    private String deckname; // Name of the deck
+    private String cardName; // Name of the card
+    private String user; // User associated with the deck
 
+    // Getter and setter for deckname
     public String getDeckname() {
         return deckname;
     }
@@ -13,6 +15,7 @@ public class AddRemoveCardRequest {
         this.deckname = deckname;
     }
 
+    // Getter and setter for cardName
     public String getCardName() {
         return cardName;
     }
@@ -21,6 +24,7 @@ public class AddRemoveCardRequest {
         this.cardName = cardName;
     }
 
+    // Getter and setter for user
     public String getUser() {
         return user;
     }

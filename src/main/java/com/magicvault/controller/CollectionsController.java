@@ -32,54 +32,63 @@ public class CollectionsController {
     @Autowired
     public CollectionsRepository collectionsRepository;
 
-	@Autowired
-	public ScryfallService scryfallService;
+    @Autowired
+    public ScryfallService scryfallService;
 
+    // Endpoint to save a collection
     @PostMapping
     public ResponseEntity<?> saveCollection(@RequestBody Collections collection) {
         try {
-            Optional<Collections> existingCollection = collectionsRepository
-                    .findByCollectionnameAndUser(collection.getCollectionname(), collection.getUser());
+            // Check if a collection with the same name already exists for this user
+            Optional<Collections> existingCollection = collectionsRepository.findByCollectionnameAndUser(collection.getCollectionname(), collection.getUser());
 
             if (existingCollection.isPresent()) {
-                return new ResponseEntity<String>("La colección con el mismo nombre ya existe para este usuario",
-                        HttpStatus.CONFLICT);
+                return new ResponseEntity<>("A collection with the same name already exists for this user", HttpStatus.CONFLICT);
             }
 
+            // Save the new collection
             Collections collectionsaved = collectionsRepository.save(collection);
-            return new ResponseEntity<Collections>(collectionsaved, HttpStatus.CREATED);
+            return new ResponseEntity<>(collectionsaved, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to retrieve all collections
     @GetMapping
     public ResponseEntity<?> findAllCollections() {
         try {
+            // Retrieve all collections from the repository
             List<Collections> collections = collectionsRepository.findAll();
-            return new ResponseEntity<List<Collections>>(collections, HttpStatus.OK);
+            return new ResponseEntity<>(collections, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to find collections by user
     @GetMapping(value = "/user/{user}")
     public ResponseEntity<?> findDecksByUser(@PathVariable("user") String user) {
         try {
+            // Find collections by user from the repository
             List<Collections> usercollections = collectionsRepository.findByUser(user);
-            return new ResponseEntity<List<Collections>>(usercollections, HttpStatus.OK);
+            return new ResponseEntity<>(usercollections, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-	
+
+    // Endpoint to find cards in a collection
     @GetMapping("/cards")
     public List<ScryfallCard> findCardsInCollection(@RequestParam String user, @RequestParam String collectionName) {
         try {
+            // Find the collection by name and user
             Optional<Collections> collection = collectionsRepository.findByCollectionnameAndUser(collectionName, user);
             if (collection.isPresent()) {
+                // Get the list of cards from the collection
                 List<String> cards = collection.get().getCollectionlist();
-				return scryfallService.getCardList(cards);
+                // Use Scryfall service to get card details
+                return scryfallService.getCardList(cards);
             } else {
                 return null;
             }
@@ -88,102 +97,110 @@ public class CollectionsController {
         }
     }
 
+    // Endpoint to add a card to a collection
     @PutMapping("/addCard")
     public ResponseEntity<?> addCardToDeck(@RequestBody AddRemoveCardRequest addCardRequest) {
         try {
-            Optional<Collections> _collection = collectionsRepository
-                    .findByCollectionnameAndUser(addCardRequest.getDeckname(), addCardRequest.getUser());
+            // Find the collection by name and user
+            Optional<Collections> _collection = collectionsRepository.findByCollectionnameAndUser(addCardRequest.getDeckname(), addCardRequest.getUser());
             if (_collection.isPresent()) {
                 Collections collection = _collection.get();
+                // Add the card to the collection
                 collection.getCollectionlist().add(addCardRequest.getCardName());
+                // Save the updated collection
                 collectionsRepository.save(collection);
-                return new ResponseEntity<Collections>(collection, HttpStatus.OK);
+                return new ResponseEntity<>(collection, HttpStatus.OK);
             } else {
-                return new ResponseEntity<String>("No se encontró la colección para el usuario especificado",
-                        HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Collection not found for the specified user", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to remove a card from a collection
     @DeleteMapping("/removeCard")
     public ResponseEntity<?> removeCardFromDeck(@RequestBody AddRemoveCardRequest removeCardRequest) {
         try {
-            Optional<Collections> _collection = collectionsRepository
-                    .findByCollectionnameAndUser(removeCardRequest.getDeckname(), removeCardRequest.getUser());
+            // Find the collection by name and user
+            Optional<Collections> _collection = collectionsRepository.findByCollectionnameAndUser(removeCardRequest.getDeckname(), removeCardRequest.getUser());
             if (_collection.isPresent()) {
                 Collections collection = _collection.get();
+                // Remove the card from the collection
                 boolean removed = collection.getCollectionlist().remove(removeCardRequest.getCardName());
                 if (removed) {
+                    // Save the updated collection
                     collectionsRepository.save(collection);
-                    return new ResponseEntity<Collections>(collection, HttpStatus.OK);
+                    return new ResponseEntity<>(collection, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<String>("La carta no existe en la colección especificada",
-                            HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>("The card does not exist in the specified collection", HttpStatus.NOT_FOUND);
                 }
             } else {
-                return new ResponseEntity<String>("No se encontró la colección para el usuario especificado",
-                        HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Collection not found for the specified user", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to find a collection by ID
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> findDeck(@PathVariable("id") String id) {
         try {
+            // Find the collection by ID
             ObjectId collectionId = new ObjectId(id);
             Optional<Collections> _collection = collectionsRepository.findById(collectionId);
             if (_collection.isPresent()) {
                 Collections collection = _collection.get();
-                return new ResponseEntity<Collections>(collection, HttpStatus.OK);
+                return new ResponseEntity<>(collection, HttpStatus.OK);
             } else {
-                return new ResponseEntity<String>("No existe la Colección", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>("Collection not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to delete a collection
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteCollection(@RequestBody AddRemoveCardRequest toBeDeleted) {
         try {
-            Optional<Collections> collectionOpt = collectionsRepository
-                    .findByCollectionnameAndUser(toBeDeleted.getDeckname(), toBeDeleted.getUser());
+            // Find the collection by name and user
+            Optional<Collections> collectionOpt = collectionsRepository.findByCollectionnameAndUser(toBeDeleted.getDeckname(), toBeDeleted.getUser());
             if (collectionOpt.isPresent()) {
                 Collections collection = collectionOpt.get();
+                // Delete the collection
                 collectionsRepository.delete(collection);
                 return new ResponseEntity<>(collection, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("No se encontró la colección para el usuario especificado",
-                        HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Collection not found for the specified user", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Error interno del servidor: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal Server Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Endpoint to update a collection
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateCollection(@PathVariable("id") String id, @RequestBody Collections newCollection) {
         try {
+            // Find the collection by ID
             ObjectId collectionId = new ObjectId(id);
             Optional<Collections> _collection = collectionsRepository.findById(collectionId);
             if (_collection.isPresent()) {
                 Collections collection = _collection.get();
+                // Update collection details
                 collection.setUser(newCollection.getUser());
                 collection.setCollectionname(newCollection.getCollectionname());
                 collection.setCollectionlist(newCollection.getCollectionlist());
+                // Save the updated collection
                 collectionsRepository.save(collection);
-                return new ResponseEntity<Collections>(collection, HttpStatus.OK);
+                return new ResponseEntity<>(collection, HttpStatus.OK);
             } else {
-                return new ResponseEntity<String>("No existe la Colección", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>("Collection not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

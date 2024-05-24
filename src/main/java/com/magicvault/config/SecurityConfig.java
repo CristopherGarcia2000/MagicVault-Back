@@ -14,11 +14,12 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
+    // Bean definition for SecurityFilterChain, configures security for HTTP requests
     @SuppressWarnings("deprecation")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Añade esta línea
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeRequests(requests -> requests
                 .requestMatchers("/v3/api-docs/", "/swagger-ui/", "/swagger-ui.html", "/auth/*").permitAll()
                 .anyRequest().permitAll());
@@ -26,14 +27,15 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
+    // Bean definition for CorsConfigurationSource, configures CORS (Cross-Origin Resource Sharing) for the application
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // Permitir todos los orígenes. En producción, especifica los orígenes permitidos.
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // Permitir envío de credenciales (cookies, headers de autenticación, etc.)
-        
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Allow requests from any origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specified HTTP methods
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Allow any headers
+        configuration.setAllowCredentials(true); // Allow credentials (e.g., cookies, authorization headers)
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

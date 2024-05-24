@@ -35,33 +35,40 @@ public class DecksController {
 	@Autowired
 	private ScryfallService scryfallService;
 
-
+	// Endpoint to retrieve all decks
 	@GetMapping
 	public ResponseEntity<?> findAllDecks() {
 		try {
+			// Retrieve all decks from the repository
 			List<Decks> decks = deckRepository.findAll();
-			return new ResponseEntity<List<Decks>>(decks, HttpStatus.OK);
+			return new ResponseEntity<>(decks, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to find decks by user
 	@GetMapping(value = "/user/{user}")
 	public ResponseEntity<?> findDecksByUser(@PathVariable("user") String user) {
 		try {
+			// Find decks by user from the repository
 			List<Decks> userDecks = deckRepository.findByUser(user);
-			return new ResponseEntity<List<Decks>>(userDecks, HttpStatus.OK);
+			return new ResponseEntity<>(userDecks, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to find cards in a deck
 	@GetMapping("/cards")
 	public List<ScryfallCard> findCardsInDeck(@RequestParam String user, @RequestParam String deckName) {
 		try {
+			// Find the deck by name and user
 			Optional<Decks> deck = deckRepository.findByDecknameAndUser(deckName, user);
 			if (deck.isPresent()) {
+				// Get the list of cards from the deck
 				List<String> cards = deck.get().getDecklist();
+				// Use Scryfall service to get card details
 				return scryfallService.getCardList(cards);
 			} else {
 				return null;
@@ -71,94 +78,106 @@ public class DecksController {
 		}
 	}
 
+	// Endpoint to add a card to a deck
 	@PutMapping("/addCard")
 	public ResponseEntity<?> addCardToDeck(@RequestBody AddRemoveCardRequest addCardRequest) {
 		try {
+			// Find the deck by name and user
 			Optional<Decks> optionalDeck = deckRepository.findByDecknameAndUser(addCardRequest.getDeckname(),
 					addCardRequest.getUser());
 			if (optionalDeck.isPresent()) {
 				Decks deck = optionalDeck.get();
+				// Add the card to the deck
 				deck.getDecklist().add(addCardRequest.getCardName());
+				// Save the updated deck
 				deckRepository.save(deck);
-				return new ResponseEntity<Decks>(deck, HttpStatus.OK);
+				return new ResponseEntity<>(deck, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<String>("No se encontró el mazo para el usuario especificado",
-						HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Deck not found for the specified user", HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to remove a card from a deck
 	@DeleteMapping("/removeCard")
 	public ResponseEntity<?> removeCardFromDeck(@RequestBody AddRemoveCardRequest removeCardRequest) {
 		try {
+			// Find the deck by name and user
 			Optional<Decks> optionalDeck = deckRepository.findByDecknameAndUser(removeCardRequest.getDeckname(),
 					removeCardRequest.getUser());
 			if (optionalDeck.isPresent()) {
 				Decks deck = optionalDeck.get();
+				// Remove the card from the deck
 				boolean removed = deck.getDecklist().remove(removeCardRequest.getCardName());
 				if (removed) {
+					// Save the updated deck
 					deckRepository.save(deck);
-					return new ResponseEntity<Decks>(deck, HttpStatus.OK);
+					return new ResponseEntity<>(deck, HttpStatus.OK);
 				} else {
-					return new ResponseEntity<String>("La carta no existe en el mazo especificado",
-							HttpStatus.NOT_FOUND);
+					return new ResponseEntity<>("The card does not exist in the specified deck", HttpStatus.NOT_FOUND);
 				}
 			} else {
-				return new ResponseEntity<String>("No se encontró el mazo para el usuario especificado",
-						HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Deck not found for the specified user", HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to find a deck by ID
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> findDeck(@PathVariable("id") String id) {
 		try {
+			// Find the deck by ID
 			ObjectId deckId = new ObjectId(id);
 			Optional<Decks> _deck = deckRepository.findById(deckId);
 			if (_deck.isPresent()) {
 				Decks deck = _deck.get();
-				return new ResponseEntity<Decks>(deck, HttpStatus.OK);
+				return new ResponseEntity<>(deck, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<String>("No existe el mazo", HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>("Deck not found", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to delete a deck
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteDeck(@RequestBody AddRemoveCardRequest toBeDeleted) {
 		try {
+			// Find the deck by name and user
 			Optional<Decks> deckOpt = deckRepository.findByDecknameAndUser(toBeDeleted.getDeckname(),
 					toBeDeleted.getUser());
 			if (deckOpt.isPresent()) {
 				Decks deck = deckOpt.get();
+				// Delete the deck
 				deckRepository.delete(deck);
 				return new ResponseEntity<>(deck, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<>("No se encontró el mazo para el usuario especificado",
-						HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Deck not found for the specified user", HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<>("Error interno del servidor: " + e.getMessage(),
+			return new ResponseEntity<>("Internal Server Error: " + e.getMessage(),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// Endpoint to save a deck
 	@PostMapping
 	public ResponseEntity<?> saveDeck(@RequestBody Decks deck) {
 		try {
+			// Get commander card details
 			ScryfallCard commanderCard = scryfallService.getCommanderByName(deck.getCommander());
 			if (commanderCard == null) {
-				return new ResponseEntity<>("Comandante no encontrado", HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Commander not found", HttpStatus.NOT_FOUND);
 			}
 
 			deck.setCommander(commanderCard.getName());
 			deck.setColorIdentity(commanderCard.getColorIdentity());
+			// Save the new deck
 			Decks deckSaved = deckRepository.save(deck);
 			return new ResponseEntity<>(deckSaved, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -166,23 +185,27 @@ public class DecksController {
 		}
 	}
 
+	// Endpoint to update a deck
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<?> updateDeck(@PathVariable("id") String id, @RequestBody Decks newDeck) {
 		try {
+			// Find the deck by ID
 			ObjectId deckId = new ObjectId(id);
 			Optional<Decks> _deck = deckRepository.findById(deckId);
 			if (_deck.isPresent()) {
 				Decks deck = _deck.get();
+				// Update deck details
 				deck.setUser(newDeck.getUser());
 				deck.setDeckname(newDeck.getDeckname());
 				deck.setDecklist(newDeck.getDecklist());
+				// Save the updated deck
 				deckRepository.save(deck);
-				return new ResponseEntity<Decks>(deck, HttpStatus.OK);
+				return new ResponseEntity<>(deck, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<String>("No existe el mazo", HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>("Deck not found", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

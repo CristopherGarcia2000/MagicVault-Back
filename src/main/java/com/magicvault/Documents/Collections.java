@@ -8,64 +8,67 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Collections")
 public class Collections {
-	@Id
-	private ObjectId id;
-	
-	private String user;
-	
-	private String collectionname;
-	
-	private List<String> collectionlist;
+    
+    @Id
+    private ObjectId id;
+    
+    private String user;
+    
+    private String collectionname;
+    
+    private List<String> collectionlist;
+    
+    private String color;
 
-	private String color;
+    // Constructor
+    public Collections(ObjectId id, String user, String collectionname, List<String> collectionlist, String color) {
+        super();
+        this.id = id;
+        this.user = user;
+        this.collectionname = collectionname;
+        this.collectionlist = collectionlist;
+        this.color = color;
+    }
 
-	public Collections(ObjectId id, String user, String collectionname, List<String> collectionlist,String color) {
-		super();
-		this.id = id;
-		this.user = user;
-		this.collectionname = collectionname;
-		this.collectionlist = collectionlist;
-		this.color = color;
-	}
+    // Getters and setters
+    public ObjectId getId() {
+        return id;
+    }
 
-	public ObjectId getId() {
-		return id;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public String getUser() {
-		return user;
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+    public String getCollectionname() {
+        return collectionname;
+    }
 
-	public String getCollectionname() {
-		return collectionname;
-	}
+    public void setCollectionname(String collectionname) {
+        this.collectionname = collectionname;
+    }
 
-	public void setCollectionname(String collectionname) {
-		this.collectionname = collectionname;
-	}
+    public List<String> getCollectionlist() {
+        return collectionlist;
+    }
 
-	public List<String> getCollectionlist() {
-		return collectionlist;
-	}
+    public void setCollectionlist(List<String> collectionlist) {
+        this.collectionlist = collectionlist;
+    }
 
-	public void setCollectionlist(List<String> collectionlist) {
-		this.collectionlist = collectionlist;
-	}
+    public String getColor() {
+        return color;
+    }
 
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
+    public void setColor(String color) {
+        this.color = color;
+    }
 
 }

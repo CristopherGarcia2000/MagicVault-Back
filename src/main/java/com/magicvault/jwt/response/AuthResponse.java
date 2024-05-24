@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//Constructs a new AuthResponse object with the provided token.
 @Data
 @Builder
 @NoArgsConstructor

@@ -23,7 +23,7 @@ import com.magicvault.requests.RegisterRequest;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*",allowedHeaders="*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthController {
 
     @Autowired
@@ -41,57 +41,61 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Endpoint for user login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            // Autenticar al usuario
+            // Authenticate the user
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            // Cargar detalles del usuario desde el UserDetailsService
+            // Load user details from UserDetailsService
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 
-            // Generar el token JWT
+            // Generate JWT token
             String token = jwtService.getToken(userDetails);
 
-            // Crear la respuesta con el token
+            // Create response with the token
             AuthResponse authResponse = new AuthResponse(token);
 
             return new ResponseEntity<>(authResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Credenciales inválidas", HttpStatus.UNAUTHORIZED);
+            // Return unauthorized response for invalid credentials
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
     }
+
+    // Endpoint for user registration
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            // Verificar si el usuario ya existe
+            // Check if user already exists
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-                return new ResponseEntity<>("El nombre de usuario ya existe", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
             }
 
-            // Crear un nuevo usuario
+            // Create a new user
             Users newUser = new Users();
             newUser.setUsername(request.getUsername());
-            newUser.setPass(passwordEncoder.encode(request.getPassword()));
+            newUser.setPass(passwordEncoder.encode(request.getPassword())); // Encode password
             newUser.setEmail(request.getEmail());
-            newUser.setType_rol("User"); // Asignar un rol por defecto
+            newUser.setType_rol("User"); // Assign a default role
 
-            // Guardar el nuevo usuario en el repositorio
+            // Save the new user to the repository
             userRepository.save(newUser);
 
-            // Cargar detalles del usuario desde el UserDetailsService
+            // Load user details from UserDetailsService
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 
-            // Generar el token JWT
+            // Generate JWT token
             String token = jwtService.getToken(userDetails);
 
-            // Crear la respuesta con el token
+            // Create response with the token
             AuthResponse authResponse = new AuthResponse(token);
 
             return new ResponseEntity<>(authResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error al registrar el usuario", HttpStatus.INTERNAL_SERVER_ERROR);
+            // Return internal server error response for registration error
+            return new ResponseEntity<>("Error registering user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
-

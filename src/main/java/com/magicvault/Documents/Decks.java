@@ -8,81 +8,82 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Decks")
 public class Decks {
-	
-	@Id
-	private ObjectId id;
-	
-	private String user;
-	
-	private String deckname;
-	
-	private List<String> decklist;
+    
+    @Id
+    private ObjectId id;
+    
+    private String user;
+    
+    private String deckname;
+    
+    private List<String> decklist;
+    
+    private String commander;
+    
+    private String color;
 
-	private String commander;
+    // Constructor
+    public Decks(ObjectId id, String user, String deckname, List<String> decklist, String commander, String color) {
+        super();
+        this.id = id;
+        this.user = user;
+        this.deckname = deckname;
+        this.decklist = decklist;
+        this.commander = commander;
+        this.color = color;
+    }
 
-	private String color;
+    // Getters and setters
+    public ObjectId getId() {
+        return id;
+    }
 
-	public Decks(ObjectId id, String user, String deckname, List<String> decklist,String commander,String color) {
-		super();
-		this.id = id;
-		this.user = user;
-		this.deckname = deckname;
-		this.decklist = decklist;
-		this.commander = commander;
-		this.color = color;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public ObjectId getId() {
-		return id;
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	public String getUser() {
-		return user;
-	}
+    public String getDeckname() {
+        return deckname;
+    }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+    public void setDeckname(String deckname) {
+        this.deckname = deckname;
+    }
 
-	public String getDeckname() {
-		return deckname;
-	}
+    public List<String> getDecklist() {
+        return decklist;
+    }
 
-	public void setDeckname(String deckname) {
-		this.deckname = deckname;
-	}
+    public void setDecklist(List<String> decklist) {
+        this.decklist = decklist;
+    }
 
-	public List<String> getDecklist() {
-		return decklist;
-	}
+    public String getCommander() {
+        return commander;
+    }
 
-	public void setDecklist(List<String> decklist) {
-		this.decklist = decklist;
-	}
+    public void setCommander(String commander) {
+        this.commander = commander;
+    }
 
-	public String getCommander() {
-		return commander;
-	}
+    public String getColor() {
+        return color;
+    }
 
-	public void setCommander(String commander) {
-		this.commander = commander;
-	}
+    public void setColor(String color) {
+        this.color = color;
+    }
 
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public void setColorIdentity(List<String> colorIdentity) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'setColorIdentity'");
-	}
-	
+    // This method is not implemented yet
+    public void setColorIdentity(List<String> colorIdentity) {
+        throw new UnsupportedOperationException("Unimplemented method 'setColorIdentity'");
+    }
 }

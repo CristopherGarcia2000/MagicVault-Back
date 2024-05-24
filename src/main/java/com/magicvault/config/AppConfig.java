@@ -22,34 +22,41 @@ import lombok.RequiredArgsConstructor;
 public class AppConfig {
     @Autowired
     private UsersRepository userRepository;
+    
+    // Bean definition for RestTemplate, creates a RestTemplate instance
     @Bean
-     RestTemplate restTemplate() {
+    RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
+    // Bean definition for AuthenticationManager, retrieves AuthenticationManager from configuration
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
-    {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // Bean definition for AuthenticationProvider, configures an AuthenticationProvider instance
     @Bean
-    public AuthenticationProvider authenticationProvider()
-    {
+    public AuthenticationProvider authenticationProvider() {
+        // Creates a DaoAuthenticationProvider instance
         DaoAuthenticationProvider authenticationProvider= new DaoAuthenticationProvider();
+        // Sets UserDetailsService for the authentication provider
         authenticationProvider.setUserDetailsService(userDetailService());
+        // Sets PasswordEncoder for the authentication provider
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
 
+    // Bean definition for PasswordEncoder, creates a BCryptPasswordEncoder instance
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Bean definition for UserDetailsService, retrieves UserDetails from UserRepository based on username
     @Bean
     public UserDetailsService userDetailService() {
         return username -> userRepository.findByUsername(username)
-        .orElseThrow(()-> new UsernameNotFoundException("User not fournd"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

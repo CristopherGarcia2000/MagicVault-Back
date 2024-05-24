@@ -1,3 +1,4 @@
+// MongoDB repository interface for Users documents.
 package com.magicvault.repository;
 
 import java.util.Optional;
@@ -8,7 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.magicvault.documents.Users;
 
-public interface UsersRepository extends MongoRepository<Users,ObjectId> {
-	Users findByUsernameAndPass(String username, String pass);
+public interface UsersRepository extends MongoRepository<Users, ObjectId> {
+    // Method to find a user by username and password.
+    Users findByUsernameAndPass(String username, String pass);
+    
+    // Method to find a user by username.
     Optional<UserDetails> findByUsername(String username);
 }
