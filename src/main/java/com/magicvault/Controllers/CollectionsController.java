@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.magicvault.Card.ScryfallCard;
 import com.magicvault.Documents.Collections;
 import com.magicvault.Repositories.CollectionsRepository;
 import com.magicvault.Requests.AddRemoveCardRequest;
+import com.magicvault.Service.ScryfallService;
 
 
 @RestController
@@ -29,6 +32,9 @@ public class CollectionsController {
 
     @Autowired
     public CollectionsRepository collectionsRepository;
+
+	@Autowired
+	public ScryfallService scryfallService;
 
     @PostMapping
     public ResponseEntity<?> saveCollection(@RequestBody Collections collection) {
@@ -65,6 +71,21 @@ public class CollectionsController {
             return new ResponseEntity<List<Collections>>(usercollections, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+	
+    @GetMapping("/cards")
+    public List<ScryfallCard> findCardsInCollection(@RequestParam String user, @RequestParam String collectionName) {
+        try {
+            Optional<Collections> collection = collectionsRepository.findByCollectionnameAndUser(collectionName, user);
+            if (collection.isPresent()) {
+                List<String> cards = collection.get().getCollectionlist();
+				return scryfallService.getCardList(cards);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 

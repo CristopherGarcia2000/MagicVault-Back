@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.magicvault.Card.ScryfallCard;
 import com.magicvault.Documents.Decks;
 import com.magicvault.Repositories.DecksRepository;
 import com.magicvault.Requests.AddRemoveCardRequest;
+import com.magicvault.Service.ScryfallService;
 
 @RestController
 @RequestMapping("/decks")
@@ -28,6 +31,10 @@ public class DecksController {
 
 	@Autowired
 	private DecksRepository deckRepository;
+
+	@Autowired
+	private ScryfallService scryfallService;
+
 
 	@GetMapping
 	public ResponseEntity<?> findAllDecks() {
@@ -46,6 +53,21 @@ public class DecksController {
 			return new ResponseEntity<List<Decks>>(userDecks, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/cards")
+	public List<ScryfallCard> findCardsInDeck(@RequestParam String user, @RequestParam String deckName) {
+		try {
+			Optional<Decks> deck = deckRepository.findByDecknameAndUser(deckName, user);
+			if (deck.isPresent()) {
+				List<String> cards = deck.get().getDecklist();
+				return scryfallService.getCardList(cards);
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
@@ -127,6 +149,22 @@ public class DecksController {
 		}
 	}
 
+	@PostMapping
+	public ResponseEntity<?> saveDeck(@RequestBody Decks deck) {
+		try {
+			ScryfallCard commanderCard = scryfallService.getCommanderByName(deck.getCommander());
+			if (commanderCard == null) {
+				return new ResponseEntity<>("Comandante no encontrado", HttpStatus.NOT_FOUND);
+			}
+
+			deck.setCommander(commanderCard.getName());
+			deck.setColorIdentity(commanderCard.getColorIdentity());
+			Decks deckSaved = deckRepository.save(deck);
+			return new ResponseEntity<>(deckSaved, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<?> updateDeck(@PathVariable("id") String id, @RequestBody Decks newDeck) {

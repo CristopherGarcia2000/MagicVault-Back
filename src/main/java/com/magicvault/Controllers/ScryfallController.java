@@ -1,0 +1,81 @@
+package com.magicvault.Controllers;
+
+import java.util.Optional;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.magicvault.Documents.Collections;
+import com.magicvault.Documents.Decks;
+import com.magicvault.Repositories.CollectionsRepository;
+import com.magicvault.Repositories.DecksRepository;
+import com.magicvault.Requests.CardListRequests;
+import com.magicvault.Requests.CardSearchFilter;
+import com.magicvault.Requests.CreatureTypesRequest;
+import com.magicvault.Requests.SetsDTO;
+import com.magicvault.Service.ScryfallService;
+
+
+@RestController
+@CrossOrigin(origins = "*",allowedHeaders="*")
+public class ScryfallController {
+	@Autowired
+    private ScryfallService scryfallService;
+	@Autowired
+	private DecksRepository deckRepository;
+	@Autowired
+	private CollectionsRepository collectionsRepository;
+
+
+    @GetMapping("/random-commander")
+    public Object getRandomCommander() {
+        return scryfallService.getRandomCommander();
+    }
+
+
+    @GetMapping("/all-cards")
+    public Object getAllCards() {
+    	return scryfallService.getAllCards();
+    }
+    @GetMapping(value="/deck/{id}")
+	public Object getDeckList(@PathVariable String id) {
+    	ObjectId deckId = new ObjectId(id);
+		Optional<Decks> _deck = deckRepository.findById(deckId);
+		if(_deck.isPresent()) 
+		{
+			Decks deck = _deck.get();
+			return scryfallService.getCardList(deck.getDecklist());	
+		}
+		return null; 
+    }
+    @GetMapping(value="/collection/{id}")
+	public Object getCollectionList(@PathVariable String id) {
+    	ObjectId collectionId = new ObjectId(id);
+		Optional<Collections> _collection = collectionsRepository.findById(collectionId);
+		if(_collection.isPresent()) 
+		{
+			Collections collection = _collection.get();
+			return scryfallService.getCardList(collection.getCollectionlist());	
+		}
+		return null; 
+    }
+    @GetMapping("/creature-types")
+    public CreatureTypesRequest getCreatureTypes() {
+        return scryfallService.getCreatureTypes();
+    }
+
+    @GetMapping("/sets")
+    public SetsDTO getAllSets() {
+        return scryfallService.getAllSets();
+    }
+    @PostMapping("/search-cards")
+	public CardListRequests searchCards(@RequestBody CardSearchFilter filter) {
+    	return scryfallService.searchCards(filter);
+	}
+}
