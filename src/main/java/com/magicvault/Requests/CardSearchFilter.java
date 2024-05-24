@@ -1,4 +1,4 @@
-package com.magicvault.Requests;
+package com.magicvault.requests;
 
 import java.util.List;
 

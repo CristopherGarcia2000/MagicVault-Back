@@ -1,4 +1,4 @@
-package com.magicvault.Controllers;
+package com.magicvault.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.magicvault.Documents.Users;
-import com.magicvault.Repositories.UsersRepository;
+import com.magicvault.documents.Users;
+import com.magicvault.repository.UsersRepository;
 
 @RestController
 @RequestMapping("/users")

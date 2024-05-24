@@ -1,4 +1,4 @@
-package com.magicvault.Documents;
+package com.magicvault.documents;
 
 import java.util.List;
 

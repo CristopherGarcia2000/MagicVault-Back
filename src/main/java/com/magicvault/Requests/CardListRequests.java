@@ -1,6 +1,6 @@
-package com.magicvault.Requests;
+package com.magicvault.requests;
 
-import com.magicvault.Card.ScryfallCard;
+import com.magicvault.card.ScryfallCard;
 
 public class CardListRequests {
 	private ScryfallCard[] data;

@@ -1,4 +1,4 @@
-package com.magicvault.Controllers;
+package com.magicvault.controller;
 
 import java.util.Optional;
 
@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.magicvault.Documents.Collections;
-import com.magicvault.Documents.Decks;
-import com.magicvault.Repositories.CollectionsRepository;
-import com.magicvault.Repositories.DecksRepository;
-import com.magicvault.Requests.CardListRequests;
-import com.magicvault.Requests.CardSearchFilter;
-import com.magicvault.Requests.CreatureTypesRequest;
-import com.magicvault.Requests.SetsDTO;
-import com.magicvault.Service.ScryfallService;
+import com.magicvault.documents.Collections;
+import com.magicvault.documents.Decks;
+import com.magicvault.repository.CollectionsRepository;
+import com.magicvault.repository.DecksRepository;
+import com.magicvault.requests.CardListRequests;
+import com.magicvault.requests.CardSearchFilter;
+import com.magicvault.requests.CreatureTypesRequest;
+import com.magicvault.requests.SetsDTO;
+import com.magicvault.services.ScryfallService;
 
 
 @RestController

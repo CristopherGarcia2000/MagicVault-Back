@@ -1,4 +1,4 @@
-package com.magicvault.Service;
+package com.magicvault.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.magicvault.Card.ScryfallCard;
-import com.magicvault.Requests.CardListRequests;
-import com.magicvault.Requests.CardSearchFilter;
-import com.magicvault.Requests.CreatureTypesRequest;
-import com.magicvault.Requests.SetsDTO;
+import com.magicvault.card.ScryfallCard;
+import com.magicvault.requests.CardListRequests;
+import com.magicvault.requests.CardSearchFilter;
+import com.magicvault.requests.CreatureTypesRequest;
+import com.magicvault.requests.SetsDTO;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;

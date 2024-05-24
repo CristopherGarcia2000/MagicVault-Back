@@ -1,4 +1,4 @@
-package com.magicvault.Requests;
+package com.magicvault.requests;
 
 public class SetsRequest {
     private String name;

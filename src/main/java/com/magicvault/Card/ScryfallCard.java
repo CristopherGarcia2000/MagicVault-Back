@@ -1,4 +1,4 @@
-package com.magicvault.Card;
+package com.magicvault.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
